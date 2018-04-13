@@ -17,8 +17,27 @@
                 {
                     skippable: true,
                     splash: 'step 1',
-                    inputName: 'step1',
-                    defaultValue: 'Enter Stuff Here.',
+                    inputs: [
+                        {
+                            id: 'id_first_name',
+                            label: 'First Name',
+                            inputName: 'firstname',
+                            placeholder: 'First Name',
+                            inputType: "text",
+                        },
+                        {
+                            label: 'Last Name',
+                            inputName: 'lastname',
+                            inputType: "text",
+                        },
+                        {
+                            label: 'Relationship',
+                            inputName: 'relationship',
+                            inputType: "text",
+                            value: '"kicking", "the", "ladder",',
+                        },
+
+                    ],
                 },
                 {
                     skippable: true,

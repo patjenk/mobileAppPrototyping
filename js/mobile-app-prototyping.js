@@ -9,8 +9,21 @@ function multiPageForm(opts) {
         otherViews: {},
         currentStep: 0,
         currentView: null,
-        data: {},
+        data: [],
         active: false,
+    }
+
+    // initialize form data
+    for (var x=0; x<settings.steps.length; x++) {
+        var newData = {}
+        if (typeof settings.steps[x].inputs !== "undefined") {
+            for (var y=0; y<settings.steps[x].inputs.length; y++) {
+                if (typeof settings.steps[x].inputs[y].value !== "undefined") {
+                    newData[settings.steps[x].inputs[y].inputName] = settings.steps[x].inputs[y].value;
+                }
+            }
+        }
+        state.data.push(newData);
     }
 
     var easyElementCreator = function(elementTypeName, classNames, idName, content) {
@@ -25,7 +38,7 @@ function multiPageForm(opts) {
         }
         if (typeof content !== 'undefined') {
             result.innerHTML = content;
-        } 
+        }
         return result;
     }
 
@@ -34,10 +47,10 @@ function multiPageForm(opts) {
                                            ["multi-part-form",],
                                            settings.name,
                                            "");
-       
+
         var newSplash = easyElementCreator("div",
                                            ["splash",]);
-         
+
         if (state.currentStep == 0) {
             var cancelButton = easyElementCreator("div",
                                                   ["splash-element", "cancel-button",],
@@ -81,9 +94,41 @@ function multiPageForm(opts) {
             newSplash.appendChild(nextButton);
             newSplash.appendChild(document.createTextNode("\r\n"));
         }
-
-
         newScreen.appendChild(newSplash);
+
+        var content = easyElementCreator("div",
+                                         ["content",]);
+
+        if (typeof screenOpts.inputs !== "undefined") {
+            for (var x=0; x<screenOpts.inputs.length; x++) {
+                if (screenOpts.inputs[x].inputType === "text") {
+                    var inputGroup = easyElementCreator("div",
+                                                        ['input-group',]);
+                    var label = easyElementCreator("label",
+                                                   ['input-label',],
+                                                   undefined,
+                                                   screenOpts.inputs[x].label);
+                    inputGroup.appendChild(label);
+                    var input = easyElementCreator("input",
+                                                   ['multi-part-form-input',]);
+                    input.setAttribute('type', 'text');
+                    input.name = screenOpts.inputs[x].inputName;
+                    if (typeof screenOpts.inputs[x].placeholder !== "undefined") {
+                        input.placeholder = screenOpts.inputs[x].placeholder;
+                    }
+                    if (typeof screenOpts.inputs[x].id !== "undefined") {
+                        input.id = screenOpts.inputs[x].id;
+                    }
+                    if (typeof state.data[state.currentStep] != "undefined" && typeof state.data[state.currentStep][screenOpts.inputs[x].inputName] !== "undefined") {
+                        input.value = state.data[state.currentStep][screenOpts.inputs[x].inputName];
+                    }
+                    inputGroup.appendChild(input);
+                    content.appendChild(inputGroup);
+                }
+            }
+
+        }
+        newScreen.appendChild(content);
 
         return newScreen;
     }
@@ -94,7 +139,7 @@ function multiPageForm(opts) {
         for (var x=0; x<otherViews.length; x++) {
             // save old state
             state.otherViews[x] = otherViews[x].style.display;
-            // hide element   
+            // hide element
             otherViews[x].style.display = "none";
         }
     }
@@ -125,6 +170,20 @@ function multiPageForm(opts) {
     }
 
     _multiPageForm.next = function() {
+        // save form data!
+        var currentStep = settings.steps[state.currentStep];
+        if (typeof currentStep.inputs !== "undefined") {
+            for (var y=0; y<currentStep.inputs.length; y++) {
+                var allInputs = document.getElementsByClassName('multi-part-form-input');
+                for (var z=0; z<allInputs.length; z++) {
+                    if (allInputs[z].name === currentStep.inputs[y].inputName) {
+                        state.data[state.currentStep][currentStep.inputs[y].inputName] = allInputs[z].value;
+
+                    }
+                }
+            }
+        }
+
         state.currentStep += 1;
         var newScreen = that.createScreen(settings.steps[state.currentStep]);
         document.body.removeChild(state.currentView);
