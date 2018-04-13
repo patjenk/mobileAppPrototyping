@@ -31,40 +31,55 @@ function multiPageForm(opts) {
 
     _multiPageForm.createScreen = function(screenOpts) {
         var newScreen = easyElementCreator("div",
-                                           ["multi-part-form-screen",],
+                                           ["multi-part-form",],
                                            settings.name,
                                            "");
-        
+       
         var newSplash = easyElementCreator("div",
-                                           ["multi-part-form-splash",]);
-        var cancelButton = easyElementCreator("div",
-                                              ["cancel-button",],
-                                              null,
-                                              "cancel");
-        cancelButton.onclick = that.cancel;
-        newSplash.appendChild(cancelButton);
+                                           ["splash",]);
+         
+        if (state.currentStep == 0) {
+            var cancelButton = easyElementCreator("div",
+                                                  ["splash-element", "cancel-button",],
+                                                  undefined,
+                                                  "cancel");
+            cancelButton.onclick = that.cancel;
+            newSplash.appendChild(cancelButton);
+            newSplash.appendChild(document.createTextNode("\r\n"));
+        } else {
+            var backButton = easyElementCreator("div",
+                                                  ["splash-element", "back-button",],
+                                                  undefined,
+                                                  "back");
+            backButton.onclick = that.back;
+            newSplash.appendChild(backButton);
+            newSplash.appendChild(document.createTextNode("\r\n"));
+        }
 
         var nextButton = easyElementCreator("div",
-                                            ["title",],
-                                            null,
+                                            ["splash-element", "title",],
+                                            undefined,
                                             screenOpts.splash);
         nextButton.onclick = _multiPageForm.next;
         newSplash.appendChild(nextButton);
+        newSplash.appendChild(document.createTextNode("\r\n"));
 
         if (state.currentStep == (settings.steps.length - 1)) {
             var submitButton = easyElementCreator("div",
-                                                  ["next-button",],
-                                                  null,
+                                                  ["splash-element", "next-button",],
+                                                  undefined,
                                                   "submit");
             submitButton.onclick = _multiPageForm.submit;
             newSplash.appendChild(submitButton);
+            newSplash.appendChild(document.createTextNode("\r\n"));
         } else {
             var nextButton = easyElementCreator("div",
-                                                ["next-button",],
-                                                null,
+                                                ["splash-element", "next-button",],
+                                                undefined,
                                                 "next");
             nextButton.onclick = _multiPageForm.next;
             newSplash.appendChild(nextButton);
+            newSplash.appendChild(document.createTextNode("\r\n"));
         }
 
 
@@ -111,6 +126,14 @@ function multiPageForm(opts) {
 
     _multiPageForm.next = function() {
         state.currentStep += 1;
+        var newScreen = that.createScreen(settings.steps[state.currentStep]);
+        document.body.removeChild(state.currentView);
+        document.body.appendChild(newScreen);
+        state.currentView = newScreen;
+    }
+
+    _multiPageForm.back = function() {
+        state.currentStep -=1;
         var newScreen = that.createScreen(settings.steps[state.currentStep]);
         document.body.removeChild(state.currentView);
         document.body.appendChild(newScreen);
