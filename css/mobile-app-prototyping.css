@@ -3,7 +3,7 @@
     box-sizing: border-box;
 }
 
-.tab-bar-view.splash {
+.tab-bar-view .splash {
     position: fixed;
     left: 0;
     top: 0;
@@ -15,20 +15,21 @@
     text-align: justify;
 }
 
-.tab-bar-view.splash:after {
+.tab-bar-view .splash:after {
     content: '';
     display: inline-block;
     width: 100%;
     height: 0;
 }
 
-.tab-bar-view.splash .splash-element {
+.tab-bar-view .splash .splash-element {
     display: inline-block;
     text-align: center;
     vertical-align: middle;
+    width: 75px;
 }
 
-.tab-bar-view.navigation {
+.tab-bar-view .navigation {
     position: fixed;
     left: 0;
     bottom: 0;
@@ -40,24 +41,15 @@
     text-align: justify;
 }
 
-.tab-bar-view.navigation:after {
+.tab-bar-view .navigation:after {
     content: '';
     display: inline-block;
     width: 100%;
     height: 0;
 }
 
-.tab-bar-view.navigation .navigation-element {
+.tab-bar-view .navigation .navigation-element {
     display: inline-block;
     text-align: center;
     vertical-align: middle;
-}
-
-@media only screen and (min-width: 300px) and (max-width: 736px) {
-
-    /*
-     * -- TAB BAR MOBILE VIEW STYLES --
-     * This view puts navigation icons at the bottom of the page.  
-     */
-    
 }
