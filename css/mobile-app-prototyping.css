@@ -85,3 +85,45 @@
 .multi-part-form .content {
    margin-top: 60px;
 }
+
+.input-group label {
+    width: 125px;
+    display: inline-block;
+    text-align: right;
+    margin: 5px;
+}
+
+.input-group input {
+    width: 300px;
+    font-size: 20px;
+    line-height: 24px;
+    padding: 3px 5px;
+}
+
+.simple-typeahead {
+    position: relative;
+    display: inline-block;
+}
+
+.simple-typeahead .typeahead-suggestions {
+    position: absolute;
+    margin: 5px 0;
+    border: 1px solid rgb(0,0,0,0.2);
+    width: 300px;
+    border-radius: 8px;
+    padding: 5px 0;
+    display: block;
+    left: 0px;
+    z-index: 100;
+}
+
+.simple-typeahead .typeahead-suggestions .suggestion {
+    padding: 3px 5px;
+    line-height: 20px;
+}
+
+
+.simple-typeahead .typeahead-suggestions .suggestion:hover {
+    color: white;
+    background-color: rgb(0, 0, 0, 0.2);
+}

@@ -1,7 +1,106 @@
+var easyElementCreator = function(elementTypeName, classNames, idName, content) {
+    var result = document.createElement(elementTypeName);
+    if (typeof classNames !== 'undefined') {
+        for (var x=0; x<classNames.length; x++) {
+            result.classList.add(classNames[x]);
+        }
+    }
+    if (typeof idName !== 'undefined') {
+        result.id = idName;
+    }
+    if (typeof content !== 'undefined') {
+        result.innerHTML = content;
+    }
+    return result;
+}
+
+
+function simpleTypeAhead(opts) {
+    var _simpleTypeAhead = {}
+    var settings = opts;
+
+
+    var sourceData = null;
+    var request = new XMLHttpRequest();
+    _simpleTypeAhead.requestListener = function(response) {
+        if (response.target.status >= 200 && response.target.status < 400) {
+            //success!
+            sourceData = response.target.response;
+        } else {
+            console.log("Uh oh: status code " + response.target.status + " while loading " + settings.typeaheadSource);
+        }
+    };
+    request.addEventListener("load", _simpleTypeAhead.requestListener);
+    request.open("GET", settings.typeaheadSource);
+    request.responseType = 'json';
+    request.send();
+
+    settings.inputElement.onclick = function(elem) {
+    }
+
+    settings.inputElement.onkeyup = function(elem) {
+        that.hideSuggestions();
+        if (elem.target.value.length > 0) {
+            var suggestions = that.filterResults(elem.target.value);
+            if (suggestions.length > 0) {
+                that.displaySuggestions(suggestions);
+            }
+        }
+    }
+
+    _simpleTypeAhead.filterResults = function(data) {
+        var result = null;
+        if (sourceData !== null) {
+            result = []
+            for (var x=0; x<sourceData.results.length; x++) {
+                if (sourceData.results[x].value.toLowerCase().includes(data.toLowerCase())) {
+                    result.push(sourceData.results[x].value);
+                }
+            }
+        }
+        return result;
+    }
+
+    _simpleTypeAhead.populateInput = function(value) {
+        that.hideSuggestions();
+        settings.inputElement.value = value;
+    }
+
+    _simpleTypeAhead.suggestionDisplayId = function() {
+        return "id_" + settings.inputElement.name + "_suggestions";
+    }
+
+    _simpleTypeAhead.displaySuggestions = function(suggestions) {
+        var suggestionsDisplay = easyElementCreator("div",
+                                                   ["typeahead-suggestions",],
+                                                   that.suggestionDisplayId())
+        for (var x=0; x<suggestions.length; x++) {
+            var suggestion = easyElementCreator("div",
+                                                ["suggestion",],
+                                                undefined,
+                                                suggestions[x]);
+            suggestion.onclick = function(elem) {
+                that.populateInput(elem.target.innerHTML);
+            }
+            suggestionsDisplay.appendChild(suggestion);
+        }
+        settings.inputElement.parentNode.insertBefore(suggestionsDisplay, settings.inputElement.nextSibling);
+    }
+
+    _simpleTypeAhead.hideSuggestions = function() {
+        var suggestionsDisplay = document.getElementById(that.suggestionDisplayId());
+        if (typeof suggestionsDisplay !== undefined && suggestionsDisplay !== null) {
+            settings.inputElement.parentNode.removeChild(suggestionsDisplay);
+        }
+    }
+
+    var that = _simpleTypeAhead;
+    return _simpleTypeAhead;
+}
+
 function multiPageForm(opts) {
 
     var _multiPageForm = {};
-
 
     var settings = opts;
 
@@ -24,22 +123,6 @@ function multiPageForm(opts) {
             }
         }
         state.data.push(newData);
-    }
-
-    var easyElementCreator = function(elementTypeName, classNames, idName, content) {
-        var result = document.createElement(elementTypeName);
-        if (typeof classNames !== 'undefined') {
-            for (var x=0; x<classNames.length; x++) {
-                result.classList.add(classNames[x]);
-            }
-        }
-        if (typeof idName !== 'undefined') {
-            result.id = idName;
-        }
-        if (typeof content !== 'undefined') {
-            result.innerHTML = content;
-        }
-        return result;
     }
 
     _multiPageForm.createScreen = function(screenOpts) {
@@ -101,7 +184,38 @@ function multiPageForm(opts) {
 
         if (typeof screenOpts.inputs !== "undefined") {
             for (var x=0; x<screenOpts.inputs.length; x++) {
-                if (screenOpts.inputs[x].inputType === "text") {
+                if (screenOpts.inputs[x].inputType === "typeahead-text") {
+                    var inputGroup = easyElementCreator("div",
+                                                        ['input-group',]);
+                    var label = easyElementCreator("label",
+                                                   ['input-label',],
+                                                   undefined,
+                                                   screenOpts.inputs[x].label);
+                    inputGroup.appendChild(label);
+                    var inputWrapper = easyElementCreator("span",
+                                                          ["simple-typeahead",])
+                    var input = easyElementCreator("input",
+                                                   ['multi-part-form-input',]);
+                    input.setAttribute('type', 'text');
+                    input.name = screenOpts.inputs[x].inputName;
+                    if (typeof screenOpts.inputs[x].placeholder !== "undefined") {
+                        input.placeholder = screenOpts.inputs[x].placeholder;
+                    }
+                    if (typeof screenOpts.inputs[x].id !== "undefined") {
+                        input.id = screenOpts.inputs[x].id;
+                    }
+                    if (typeof state.data[state.currentStep] != "undefined" && typeof state.data[state.currentStep][screenOpts.inputs[x].inputName] !== "undefined") {
+                        input.value = state.data[state.currentStep][screenOpts.inputs[x].inputName];
+                    }
+                    inputWrapper.appendChild(input);
+                    inputGroup.appendChild(inputWrapper);
+                    content.appendChild(inputGroup);
+                    settings.pj = simpleTypeAhead({
+                        'inputElement': input,
+                        'typeaheadSource': screenOpts.inputs[x].typeaheadSource,
+                    });
+
+                } else if (screenOpts.inputs[x].inputType === "text") {
                     var inputGroup = easyElementCreator("div",
                                                         ['input-group',]);
                     var label = easyElementCreator("label",

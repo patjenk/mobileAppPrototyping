@@ -15,8 +15,20 @@
             submit: 'submiturl',
             steps: [
                 {
-                    skippable: true,
-                    splash: 'step 1',
+                    splash: 'Typeahead Text Box',
+                    inputs: [
+                        {
+                            id: 'id_typeahead_places',
+                            label: 'Location',
+                            inputName: 'location',
+                            placeholder: 'Where?',
+                            inputType: 'typeahead-text',
+                            typeaheadSource: "../json/typeahead-locations.json",
+                        },
+                    ],
+                },
+                {
+                    splash: 'Text Boxes',
                     inputs: [
                         {
                             id: 'id_first_name',
@@ -40,13 +52,6 @@
                     ],
                 },
                 {
-                    skippable: true,
-                    splash: 'step 2',
-                    inputName: 'step2',
-                    defaultValue: 'Enter Stuff Here.',
-                },
-                {
-                    skippable: true,
                     splash: 'step 3',
                     inputName: 'step3',
                     defaultValue: 'Enter Stuff Here.',
