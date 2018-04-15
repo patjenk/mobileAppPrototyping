@@ -146,15 +146,45 @@
  * phone medium (iphone 6 normal)
  */
 @media only screen and (min-width: 300px) and (max-width: 736px) {
-    .tab-bar-view .splash  {
+    .input-group label {
+        width: 100%;
+        display: inline-block;
+        text-align: left;
+        margin: 5px;
+        font-size: 24px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .input-group input {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .input-group .simple-typeahead {
+        width: 100%;
+    }
+
+    .input-group .simple-typeahead .typeahead-suggestions {
+        width: 100%;
+    }
+
+    .tab-bar-view .splash,
+    .multi-part-form .splash {
         height: 35px;
         overflow: hidden;
         padding: 0 10px 0 10px;
     }
 
-    .tab-bar-view .splash .splash-element {
+    .tab-bar-view .splash .splash-element,
+    .multi-part-form .splash .splash-element {
         font-size: 20px;
-        padding: 5px;
+        padding: 0 5px 0 5px;
+    }
+
+    .tab-bar-view .splash .splash-element.title,
+    .multi-part-form .splash .splash-element.title {
+        font-size: 14px;
     }
 
     .tab-bar-view .content-wrapper {
@@ -164,6 +194,7 @@
 
     .tab-bar-view .navigation {
         height: 66px;
+        padding: 0 40px 0 40px;
     }
 
     .tab-bar-view .navigation .navigation-element {
