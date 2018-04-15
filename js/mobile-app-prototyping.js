@@ -19,9 +19,7 @@ function simpleTypeAhead(opts) {
     var _simpleTypeAhead = {}
     var settings = opts;
 
-
     var sourceData = null;
-    var request = new XMLHttpRequest();
     _simpleTypeAhead.requestListener = function(response) {
         if (response.target.status >= 200 && response.target.status < 400) {
             //success!
@@ -30,22 +28,62 @@ function simpleTypeAhead(opts) {
             console.log("Uh oh: status code " + response.target.status + " while loading " + settings.typeaheadSource);
         }
     };
-    request.addEventListener("load", _simpleTypeAhead.requestListener);
-    request.open("GET", settings.typeaheadSource);
-    request.responseType = 'json';
-    request.send();
+
+    _simpleTypeAhead.updateData = function() {
+        requestListener = function(response) {
+            if (response.target.status >= 200 && response.target.status < 400) {
+                //success!
+                sourceData = response.target.response;
+            } else {
+                console.log("Uh oh: status code " + response.target.status + " while loading " + settings.typeaheadSource);
+            }
+        };
+        var request = new XMLHttpRequest();
+        request.addEventListener("load", requestListener);
+        var data = that.currentEntries()[that.currentPositionEntryNumber()];
+        request.open("GET", settings.typeaheadSource.replace("%QUERY%", data));
+        request.responseType = 'json';
+        request.send();
+    };
 
     settings.inputElement.onclick = function(elem) {
     }
 
     settings.inputElement.onkeyup = function(elem) {
+        that.updateData();
         that.hideSuggestions();
         if (elem.target.value.length > 0) {
-            var suggestions = that.filterResults(elem.target.value);
+            var data = that.currentEntries()[that.currentPositionEntryNumber()];
+            var suggestions = (that.filterResults(data) || []);
             if (suggestions.length > 0) {
                 that.displaySuggestions(suggestions);
             }
         }
+    }
+
+    _simpleTypeAhead.currentEntries = function() {
+        var result = [];
+        var splitdata = settings.inputElement.value.split(",");
+        for (var x=0; x<splitdata.length; x++) {
+            result.push(splitdata[x].replace(/^\s+|\s+$/g, ''));
+        }
+        return result;
+    }
+
+    _simpleTypeAhead.numberOfEntries = function() {
+        return that.currentEntries().length; 
+    }
+
+    _simpleTypeAhead.currentPositionEntryNumber = function() {
+        var result = 0;
+        if (settings.multipleEntries) {
+            for (var x=0; x<settings.inputElement.value.length && x<settings.inputElement.selectionStart; x++) {
+                if (settings.inputElement.value[x] === ",") {
+                    result += 1;
+                } 
+            }
+        }
+        return result;
     }
 
     _simpleTypeAhead.filterResults = function(data) {
@@ -61,9 +99,19 @@ function simpleTypeAhead(opts) {
         return result;
     }
 
-    _simpleTypeAhead.populateInput = function(value) {
+    _simpleTypeAhead.populateInput = function(value, entryNum) {
         that.hideSuggestions();
-        settings.inputElement.value = value;
+        if (!settings.multipleEntries) {
+            settings.inputElement.value = value;
+        } else {
+            var entries = that.currentEntries();
+            entries[entryNum] = value;
+            settings.inputElement.value = entries.join(", ");
+            if (settings.inputElement.value.replace(/^\s+|\s+$/g, '').slice(-1) !== ",") {
+                settings.inputElement.value += ", ";
+            }
+        }
+        settings.inputElement.focus();
     }
 
     _simpleTypeAhead.suggestionDisplayId = function() {
@@ -80,7 +128,7 @@ function simpleTypeAhead(opts) {
                                                 undefined,
                                                 suggestions[x]);
             suggestion.onclick = function(elem) {
-                that.populateInput(elem.target.innerHTML);
+                that.populateInput(elem.target.innerHTML, that.currentPositionEntryNumber());
             }
             suggestionsDisplay.appendChild(suggestion);
         }
@@ -95,6 +143,7 @@ function simpleTypeAhead(opts) {
     }
 
     var that = _simpleTypeAhead;
+    _simpleTypeAhead.updateData();
     return _simpleTypeAhead;
 }
 
@@ -184,7 +233,7 @@ function multiPageForm(opts) {
 
         if (typeof screenOpts.inputs !== "undefined") {
             for (var x=0; x<screenOpts.inputs.length; x++) {
-                if (screenOpts.inputs[x].inputType === "typeahead-text") {
+                if (screenOpts.inputs[x].inputType === "typeahead-multientry-text") {
                     var inputGroup = easyElementCreator("div",
                                                         ['input-group',]);
                     var label = easyElementCreator("label",
@@ -213,6 +262,39 @@ function multiPageForm(opts) {
                     settings.pj = simpleTypeAhead({
                         'inputElement': input,
                         'typeaheadSource': screenOpts.inputs[x].typeaheadSource,
+                        'multipleEntries': true 
+                    });
+
+                } else if (screenOpts.inputs[x].inputType === "typeahead-text") {
+                    var inputGroup = easyElementCreator("div",
+                                                        ['input-group',]);
+                    var label = easyElementCreator("label",
+                                                   ['input-label',],
+                                                   undefined,
+                                                   screenOpts.inputs[x].label);
+                    inputGroup.appendChild(label);
+                    var inputWrapper = easyElementCreator("span",
+                                                          ["simple-typeahead",])
+                    var input = easyElementCreator("input",
+                                                   ['multi-part-form-input',]);
+                    input.setAttribute('type', 'text');
+                    input.name = screenOpts.inputs[x].inputName;
+                    if (typeof screenOpts.inputs[x].placeholder !== "undefined") {
+                        input.placeholder = screenOpts.inputs[x].placeholder;
+                    }
+                    if (typeof screenOpts.inputs[x].id !== "undefined") {
+                        input.id = screenOpts.inputs[x].id;
+                    }
+                    if (typeof state.data[state.currentStep] != "undefined" && typeof state.data[state.currentStep][screenOpts.inputs[x].inputName] !== "undefined") {
+                        input.value = state.data[state.currentStep][screenOpts.inputs[x].inputName];
+                    }
+                    inputWrapper.appendChild(input);
+                    inputGroup.appendChild(inputWrapper);
+                    content.appendChild(inputGroup);
+                    settings.pj = simpleTypeAhead({
+                        'inputElement': input,
+                        'typeaheadSource': screenOpts.inputs[x].typeaheadSource,
+                        'multipleEntries': false
                     });
 
                 } else if (screenOpts.inputs[x].inputType === "text") {

@@ -15,6 +15,19 @@
             submit: 'submiturl',
             steps: [
                 {
+                    splash: 'Typeahead Multientry',
+                    inputs: [
+                        {
+                            id: 'id_typeahead_people',
+                            label: 'people',
+                            inputName: 'people',
+                            placeholder: 'Who?',
+                            inputType: 'typeahead-multientry-text',
+                            typeaheadSource: "../json/typeahead-people.json?query=%QUERY%",
+                        },
+                    ],
+                },
+                {
                     splash: 'Typeahead Text Box',
                     inputs: [
                         {
@@ -23,7 +36,7 @@
                             inputName: 'location',
                             placeholder: 'Where?',
                             inputType: 'typeahead-text',
-                            typeaheadSource: "../json/typeahead-locations.json",
+                            typeaheadSource: "../json/typeahead-locations.json?query=%QUERY%",
                         },
                     ],
                 },
@@ -52,9 +65,7 @@
                     ],
                 },
                 {
-                    splash: 'step 3',
-                    inputName: 'step3',
-                    defaultValue: 'Enter Stuff Here.',
+                    splash: 'step 4',
                 }
             ],
         });
