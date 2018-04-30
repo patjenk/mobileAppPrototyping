@@ -163,6 +163,16 @@
     color: black;
 }
 
+.splash-wrapper {
+    width 100%;
+    text-align: center;
+}
+
+.login-error {
+    color: red;
+    margin: 10px 0 10px 0;
+}
+
 .login-form {
 }
 
