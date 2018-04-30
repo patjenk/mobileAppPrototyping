@@ -151,7 +151,7 @@
 
 .select-wheel .wheel-container .wheel-element {
     height: 25px;
-    border-top: 1px dashed rgb(0,0,0,0.2);
+    border-top: 1px dashed rgb(0,0,0,0.3);
     text-align: center;
 }
 
@@ -162,10 +162,29 @@
     background-color: rgb(0,0,0,0.1);
     color: black;
 }
+
+.login-form {
+}
+
+.login-form .form-element {
+    padding: 3px 0 3px 0;
+}
+
+.login-form fieldset {
+    border: 0;
+}
+
+.login-form .form-element input {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #80808066;
+    font-size: 24px;
+}
+
 /*
  * phone medium (iphone 6 normal)
  */
-@media only screen and (min-width: 300px) and (max-width: 736px) {
+@media only screen and (min-width: 300px) and (max-width: 936px) {
     .input-group label {
         width: 100%;
         display: inline-block;
@@ -230,5 +249,26 @@
 
     .tab-bar-view .navigation .navigation-element .navigation-text {
         display: none;
+    }
+
+    .select-wheel .wheel-container {
+        border: 2px solid black;
+        border-radius: 8px;
+        height: 500px;
+        overflow: hidden;
+    }
+
+    .select-wheel .wheel-container .wheel-element {
+        height: 125px;
+        border-top: 1px dashed rgb(0,0,0,0.3);
+        text-align: center;
+    }
+    .select-wheel .wheel-container .wheel-element.scrolling {
+    }
+    .select-wheel .wheel-container .wheel-element.selected {
+    }
+
+    .login-form .form-element input {
+        width: 100%;
     }
 }

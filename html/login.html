@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Example Login Page</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/mobile-app-prototyping.css">
+        <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                document.getElementById("{{ form.username.id_for_label }}").focus();
+            }, false);
+        </script>
+    </head>
+    <body>
+
+        <div class="splash-wrapper">
+            <div class="splash">
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="content">
+                <form method="post" class="login-form" action="">
+                    <input type="hidden" name="next" value="" />
+                        <!-- csrf token goes here -->
+                        <fieldset>
+                            <div class="form-element">
+                                <input type="text" name="username" id="username_id" placeholder="Username"/>
+                            </div>
+
+                            <div class="form-element">
+                                <input type="password" name="password" id="password_id" placeholder="Password"/>
+                            </div>
+                            <div class="form-element">
+                                <input class="" type="submit" value="login" />
+                            </div>
+                        </fieldset>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
+
